@@ -4,25 +4,46 @@ import { useState } from 'react';
 import { ModeToggle } from '@/components/ModeToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lexend } from 'next/font/google';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar';
 
+type NpmPackageType = {
+  versions: { [key: string]: NpmPackageType },
+  dependencies: { [key: string]: string }
+};
 
 const packageLink = 'https://registry.npmjs.org/';
-const searchLink = 'https://registry.npmjs.org/-/v1/search?size=10&from=0';
+// const searchLink = 'https://registry.npmjs.org/-/v1/search?size=10&from=0';
+
+const getDependencies = (data: NpmPackageType) => {
+  if (data.dependencies) {
+    return Object.values(data.dependencies);
+  }
+  
+  return {};
+
+};
+const getVersions = (data: NpmPackageType) => {
+  return Object.values(data.versions);
+};
+
+const getLatestPackageInfo = (data: NpmPackageType) => {
+  const latestVersion =  getVersions(data).pop();
+  return latestVersion;
+}
 
 const Search = () => {
   const [text, setState] = useState('');
-  // const onSearch = async () => {
-  //   const endpoint = `https://registry.npmjs.org/-/v1/search?text=${text}`;
-  //   const response = await fetch(endpoint);
-  //   const data = await response.json();
-  //   console.log(data);
-  // };
-
   const onSearch = async () => {
-    const endpoint = `https://registry.npmjs.org/${text}`;
+    const endpoint = `${packageLink}${text}`;
     const response = await fetch(endpoint);
     const data = await response.json();
+    console.log(getVersions(data));
+    console.log(getDependencies(data));
+    console.log(getLatestPackageInfo(data));
     return data;
   };
 
@@ -41,8 +62,17 @@ export default function Layout({
 }>) {
   return (
     <div>
-      <div className='flex justify-between items-center p-2 h-16'>
-        <div className="flex item-center gap-4"><div className='flex items-center'>Package Track</div><Search /></div>
+      <div className='flex justify-between items-center p-4 h-16'>
+        <div className="flex item-center gap-4">
+          <div className='flex items-center w-52 gap-4'>
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            Package Track
+          </div>
+          <Search />
+        </div>
         <div>
           <ModeToggle />
         </div>
