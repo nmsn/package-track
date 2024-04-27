@@ -10,40 +10,73 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 
-type NpmPackageType = {
-  versions: { [key: string]: NpmPackageType },
-  dependencies: { [key: string]: string }
+type NpmPackageSearchType = {
+  name: string;
+  versions: { [key: string]: NpmPackageVersionInfo };
+  time: {
+    modified: Date;
+    created: Date;
+  }
 };
 
+type NpmPackageVersionInfo = {
+  name: string;
+  version: string;
+  dependencies: { [key: string]: string };
+};
+
+// 这个函数只能用来搜索包名
 const packageLink = 'https://registry.npmjs.org/';
+// 用来检索列表的
 // const searchLink = 'https://registry.npmjs.org/-/v1/search?size=10&from=0';
 
-const getDependencies = (data: NpmPackageType) => {
+const getDependencies = (data: NpmPackageVersionInfo): string[] => {
   if (data.dependencies) {
-    return Object.values(data.dependencies);
+    return Object.keys(data.dependencies);
   }
-  
-  return {};
-
-};
-const getVersions = (data: NpmPackageType) => {
-  return Object.values(data.versions);
+  return [];
 };
 
-const getLatestPackageInfo = (data: NpmPackageType) => {
-  const latestVersion =  getVersions(data).pop();
+
+const getLatestPackageInfo = (data: NpmPackageSearchType) => {
+  const latestVersion = Object.values(data.versions).pop();
   return latestVersion;
-}
+};
+
+// TODO 需要间隔一定时间进行请求
+const fetchPackageByName = async (name: string): Promise<NpmPackageSearchType> => {
+  const endpoint = `${packageLink}${name}`;
+  const response = await fetch(endpoint);
+  const data = await response.json();
+  return data;
+};
+
+const getItem = async (name: string, arr: NpmPackageVersionInfo[] = []) => {
+  const data = await fetchPackageByName(name);
+  const pack = getLatestPackageInfo(data);
+  // 将 pack 信息进行储存
+  if (pack && arr.every(item => item.name !== pack?.name)) {
+    arr.push(pack);
+  }
+  return getDependencies(pack!);
+};
+
+// 广度优先遍历
+const getRecursionDep = async (name: string, arr: NpmPackageVersionInfo[] = []) => {
+  const packageNames = await getItem(name, arr);
+
+  for (let packageName of packageNames) {
+    await getRecursionDep(packageName, arr);
+  }
+};
 
 const Search = () => {
   const [text, setState] = useState('');
+  const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>([]);
   const onSearch = async () => {
-    const endpoint = `${packageLink}${text}`;
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    console.log(getVersions(data));
-    console.log(getDependencies(data));
-    console.log(getLatestPackageInfo(data));
+    const result: NpmPackageVersionInfo[] = [];
+    const data = await getRecursionDep(text, result);
+    console.log(result);
     return data;
   };
 
