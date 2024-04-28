@@ -56,23 +56,25 @@ const fetchPackageByName = async (name: string): Promise<NpmPackageSearchType> =
   return data;
 };
 
-const getItem = async (name: string, arr: NpmPackageVersionInfo[] = [], tree: NpmPackageSearchResultTree) => {
+const getItem = async (name: string, arr: NpmPackageVersionInfo[] = []) => {
   const data = await fetchPackageByName(name);
   const pack = getLatestPackageInfo(data);
   // 将 pack 信息进行储存
   if (pack && arr.every(item => item.name !== pack?.name)) {
     arr.push(pack);
-    
   }
   return getDependencies(pack!);
 };
 
 // 广度优先遍历
 const getRecursionDep = async (name: string, arr: NpmPackageVersionInfo[] = [], tree: NpmPackageSearchResultTree) => {
-  const packageNames = await getItem(name, arr, tree);
-
-  for (let packageName of packageNames) {
-    await getRecursionDep(packageName, arr, tree);
+  const packageNames = await getItem(name, arr);
+  tree.children = packageNames.map(item => {
+    return { name: item };
+  });
+  
+  for (let [index, packageName] of Object.entries(packageNames)) {
+    await getRecursionDep(packageName, arr, tree.children[+index]);
   }
 };
 
@@ -84,7 +86,7 @@ const Search = () => {
     const result: NpmPackageVersionInfo[] = [];
     const tree: NpmPackageSearchResultTree = { name: text };
     const data = await getRecursionDep(text, result, tree);
-    console.log(result);
+    console.log(result, tree);
     return data;
   };
 
