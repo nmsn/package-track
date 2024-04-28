@@ -25,6 +25,11 @@ type NpmPackageVersionInfo = {
   dependencies: { [key: string]: string };
 };
 
+type NpmPackageSearchResultTree = {
+  name: string;
+  children?: NpmPackageSearchResultTree[];
+}
+
 // 这个函数只能用来搜索包名
 const packageLink = 'https://registry.npmjs.org/';
 // 用来检索列表的
@@ -51,31 +56,34 @@ const fetchPackageByName = async (name: string): Promise<NpmPackageSearchType> =
   return data;
 };
 
-const getItem = async (name: string, arr: NpmPackageVersionInfo[] = []) => {
+const getItem = async (name: string, arr: NpmPackageVersionInfo[] = [], tree: NpmPackageSearchResultTree) => {
   const data = await fetchPackageByName(name);
   const pack = getLatestPackageInfo(data);
   // 将 pack 信息进行储存
   if (pack && arr.every(item => item.name !== pack?.name)) {
     arr.push(pack);
+    
   }
   return getDependencies(pack!);
 };
 
 // 广度优先遍历
-const getRecursionDep = async (name: string, arr: NpmPackageVersionInfo[] = []) => {
-  const packageNames = await getItem(name, arr);
+const getRecursionDep = async (name: string, arr: NpmPackageVersionInfo[] = [], tree: NpmPackageSearchResultTree) => {
+  const packageNames = await getItem(name, arr, tree);
 
   for (let packageName of packageNames) {
-    await getRecursionDep(packageName, arr);
+    await getRecursionDep(packageName, arr, tree);
   }
 };
 
 const Search = () => {
   const [text, setState] = useState('');
   const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>([]);
+  const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree[]>([]);
   const onSearch = async () => {
     const result: NpmPackageVersionInfo[] = [];
-    const data = await getRecursionDep(text, result);
+    const tree: NpmPackageSearchResultTree = { name: text };
+    const data = await getRecursionDep(text, result, tree);
     console.log(result);
     return data;
   };
