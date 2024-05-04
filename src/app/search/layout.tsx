@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { ModeToggle } from '@/components/ModeToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +26,9 @@ type NpmPackageVersionInfo = {
 };
 
 type NpmPackageSearchResultTree = {
+  id: string;
   name: string;
-  children?: NpmPackageSearchResultTree[];
+  children: NpmPackageSearchResultTree[];
 }
 
 // 这个函数只能用来搜索包名
@@ -56,39 +57,62 @@ const fetchPackageByName = async (name: string): Promise<NpmPackageSearchType> =
   return data;
 };
 
-const getItem = async (name: string, arr: NpmPackageVersionInfo[] = []) => {
-  const data = await fetchPackageByName(name);
-  const pack = getLatestPackageInfo(data);
-  // 将 pack 信息进行储存
-  if (pack && arr.every(item => item.name !== pack?.name)) {
-    arr.push(pack);
-  }
-  return getDependencies(pack!);
-};
+// 为新节点生成一个唯一的ID
+const generateNewNodeId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
 
-// 广度优先遍历
-const getRecursionDep = async (name: string, arr: NpmPackageVersionInfo[] = [], tree: NpmPackageSearchResultTree) => {
-  const packageNames = await getItem(name, arr);
-  tree.children = packageNames.map(item => {
-    return { name: item };
-  });
-  
-  for (let [index, packageName] of Object.entries(packageNames)) {
-    await getRecursionDep(packageName, arr, tree.children[+index]);
-  }
-};
+
 
 const Search = () => {
   const [text, setState] = useState('');
   const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>([]);
-  const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree[]>([]);
-  const onSearch = async () => {
-    const result: NpmPackageVersionInfo[] = [];
-    const tree: NpmPackageSearchResultTree = { name: text };
-    const data = await getRecursionDep(text, result, tree);
-    console.log(result, tree);
-    return data;
+  const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree>({} as NpmPackageSearchResultTree);
+
+  const getItem = async (name: string) => {
+    const data = await fetchPackageByName(name);
+    const pack = getLatestPackageInfo(data);
+    // 将 pack 信息进行储存
+    if (pack && packageList.every(item => item.name !== pack?.name)) {
+      setPackageList([...packageList, pack]);
+    }
+    return pack;
   };
+  
+  const updateChildrenNode = (node: NpmPackageSearchResultTree, targetId: string, children: NpmPackageSearchResultTree[]): NpmPackageSearchResultTree => {
+    debugger;
+    if (node.id === targetId) {
+      // 如果找到目标节点，返回一个新的节点
+      const newNode = { ...node, children };
+      return newNode;
+    }
+
+    return {
+      ...node,
+      children: node.children.map(childNode => updateChildrenNode(childNode, targetId, children))
+    };
+  };
+
+  const onSearch = async () => {
+    const tree: NpmPackageSearchResultTree = { id: generateNewNodeId(), name: text, children: [] };
+    const queue = [tree];
+    while (queue.length) {
+      const node = queue.shift()!;
+      const info = await getItem(node.name);
+      const packageNames = getDependencies(info!);
+      // 新的子节点
+      const newNodes = packageNames.map(item => {
+        const child = { id: generateNewNodeId(), name: item, children: [] };
+        return child;
+      });
+      
+      // 这块需要把子节点注入 packageTree 当中
+      setPackageTree((prev) => updateChildrenNode(prev?.id ? prev : tree, node.id, newNodes));
+      if (newNodes?.length) {
+        queue.push(...newNodes);
+      }
+    }
+  };
+  
+  console.log(packageTree);
 
   return (
     <div className="flex item-center space-x-2">
