@@ -22,6 +22,10 @@ type NpmPackageSearchType = {
 type NpmPackageVersionInfo = {
   name: string;
   version: string;
+  homepage: string;
+  keywords: string[];
+  author: { name: string };
+  license: string;
   dependencies: { [key: string]: string };
 };
 
@@ -69,9 +73,7 @@ const Search = () => {
 
   const getItem = async (name: string) => {
     let pack;
-    debugger;
     if (packageList.some(item => item.name === name)) {
-      debugger;
       pack = packageList.find(item => item.name === name);
     } else {
       const data = await fetchPackageByName(name);
@@ -87,7 +89,7 @@ const Search = () => {
     });
     return pack;
   };
-  
+
   const updateChildrenNode = (node: NpmPackageSearchResultTree, targetId: string, children: NpmPackageSearchResultTree[]): NpmPackageSearchResultTree => {
     if (node.id === targetId) {
       // 如果找到目标节点，返回一个新的节点
@@ -113,7 +115,7 @@ const Search = () => {
         const child = { id: generateNewNodeId(), name: item, children: [] };
         return child;
       });
-      
+
       // 这块需要把子节点注入 packageTree 当中
       setPackageTree((prev) => updateChildrenNode(prev?.id ? prev : tree, node.id, newNodes));
       if (newNodes?.length) {
@@ -121,11 +123,21 @@ const Search = () => {
       }
     }
   };
-  
+
   console.log(packageTree);
-  
+
   const displayPackageInfo = useMemo(() => {
-    return packageList.map(item => item.name);
+    return packageList.map(item => {
+      const { name, version, homepage, author, license, keywords } = item;
+      return {
+        name,
+        version,
+        homepage,
+        author,
+        license,
+        keywords,
+      };
+    });
   }, [packageList]);
 
   return (
