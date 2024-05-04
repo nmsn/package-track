@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useId } from 'react';
+import { useState, useMemo } from 'react';
 import { ModeToggle } from '@/components/ModeToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,17 +68,27 @@ const Search = () => {
   const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree>({} as NpmPackageSearchResultTree);
 
   const getItem = async (name: string) => {
-    const data = await fetchPackageByName(name);
-    const pack = getLatestPackageInfo(data);
-    // 将 pack 信息进行储存
-    if (pack && packageList.every(item => item.name !== pack?.name)) {
-      setPackageList([...packageList, pack]);
+    let pack;
+    debugger;
+    if (packageList.some(item => item.name === name)) {
+      debugger;
+      pack = packageList.find(item => item.name === name);
+    } else {
+      const data = await fetchPackageByName(name);
+      pack = getLatestPackageInfo(data);
     }
+    // 将 pack 信息进行储存
+    setPackageList(prev => {
+      if (pack && prev.every(item => item.name !== pack?.name)) {
+        return [...prev, pack]
+      } else {
+        return prev;
+      }
+    });
     return pack;
   };
   
   const updateChildrenNode = (node: NpmPackageSearchResultTree, targetId: string, children: NpmPackageSearchResultTree[]): NpmPackageSearchResultTree => {
-    debugger;
     if (node.id === targetId) {
       // 如果找到目标节点，返回一个新的节点
       const newNode = { ...node, children };
@@ -113,6 +123,10 @@ const Search = () => {
   };
   
   console.log(packageTree);
+  
+  const displayPackageInfo = useMemo(() => {
+    return packageList.map(item => item.name);
+  }, [packageList]);
 
   return (
     <div className="flex item-center space-x-2">
