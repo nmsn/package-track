@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react';
+import { useLatest } from 'ahooks';
 import { ModeToggle } from '@/components/ModeToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,7 @@ type NpmPackageVersionInfo = {
   author: { name: string };
   license: string;
   dependencies: { [key: string]: string };
+  count: number;
 };
 
 type NpmPackageSearchResultTree = {
@@ -64,27 +66,32 @@ const fetchPackageByName = async (name: string): Promise<NpmPackageSearchType> =
 // 为新节点生成一个唯一的ID
 const generateNewNodeId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
 
-
-
 const Search = () => {
   const [text, setState] = useState('');
-  const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>([]);
+  const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>([] as NpmPackageVersionInfo[]);
   const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree>({} as NpmPackageSearchResultTree);
+  const latestPackageList = useLatest(packageList);
 
   const getItem = async (name: string) => {
     let pack;
-    if (packageList.some(item => item.name === name)) {
-      pack = packageList.find(item => item.name === name);
+    if (latestPackageList.current.some(item => item.name === name)) {
+      pack = latestPackageList.current.find(item => item.name === name);
     } else {
       const data = await fetchPackageByName(name);
       pack = getLatestPackageInfo(data);
     }
+    const packWithCount = { ...pack, count: (pack?.count || 0) + 1 };
     // 将 pack 信息进行储存
     setPackageList(prev => {
       if (pack && prev.every(item => item.name !== pack?.name)) {
-        return [...prev, pack]
+        return [...prev, packWithCount] as NpmPackageVersionInfo[];
       } else {
-        return prev;
+        return prev.map(item => {
+          if (item.name === packWithCount.name) {
+            return packWithCount;
+          }
+          return item;
+        }) as NpmPackageVersionInfo[];
       }
     });
     return pack;
@@ -124,11 +131,9 @@ const Search = () => {
     }
   };
 
-  console.log(packageTree);
-
   const displayPackageInfo = useMemo(() => {
     return packageList.map(item => {
-      const { name, version, homepage, author, license, keywords } = item;
+      const { name, version, homepage, author, license, keywords, count } = item;
       return {
         name,
         version,
@@ -136,6 +141,7 @@ const Search = () => {
         author,
         license,
         keywords,
+        count,
       };
     });
   }, [packageList]);
