@@ -11,6 +11,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import Card from './Card';
+import Graph from './Graph';
 
 import fakeData from './index';
 
@@ -190,10 +191,12 @@ export default function Page() {
         </div>
       </div>
       <div style={{ height: 'calc(100vh - 64px)' }} className="flex p-4 pt-0">
-        <div className="w-80 gap-2 flex flex-col h-full overflow-auto">
+        <div className="w-80 gap-2 flex flex-col h-full overflow-auto pr-2">
           {displayPackageInfoList.map(item => <Card {...item} key={item.name} />)}
         </div>
-
+        <div className="grow h-full">
+          <Graph />
+        </div>
       </div>
     </div>
   );
