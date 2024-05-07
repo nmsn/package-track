@@ -2,11 +2,14 @@ import { useEffect, useRef } from 'react';
 import G6 from '@antv/g6';
 // import type { Graph } from '@antv/g6';
 
-function refreshDragedNodePosition(e) {
+function refreshDragedNodePosition(e: any) {
   const model = e.item.get('model');
   model.fx = e.x;
   model.fy = e.y;
 }
+
+export type SourceTargetMapType = { source: string, target: string };
+export type NodeType = { id: string, size: number, isLeaf: boolean };
 
 const data = {
   nodes: [
@@ -49,7 +52,7 @@ const data = {
 };
 const nodes = data.nodes;
 
-export default function Graph() {
+export default function Graph({ packageInfoList, sourceTargetMap }: { packageInfoList: any; sourceTargetMap: any;}) {
   const containerRef: any = useRef(null);
   let graph: any = null;
 
@@ -116,8 +119,6 @@ export default function Graph() {
         e.item.get('model').fy = null;
       });
     }
-
-
 
   }, []);
 

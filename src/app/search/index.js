@@ -1,4 +1,4 @@
-const fakeData = [
+export const fakeListData = [
   {
     "name": "vue",
     "version": "3.5.0-alpha.2",
@@ -5476,7 +5476,317 @@ const fakeData = [
     },
     "count": 1
   }
-]
+];
 
 
-export default fakeData;
+export const fakeTreeData = {
+  "id": "node-djyonjrj5",
+  "name": "vue",
+  "children": [
+    {
+      "id": "node-zms61dfk8",
+      "name": "@vue/shared",
+      "children": []
+    },
+    {
+      "id": "node-hp6kd2rql",
+      "name": "@vue/compiler-dom",
+      "children": [
+        {
+          "id": "node-5fy184wzw",
+          "name": "@vue/shared",
+          "children": []
+        },
+        {
+          "id": "node-j9unjjh7y",
+          "name": "@vue/compiler-core",
+          "children": [
+            {
+              "id": "node-pgiklq8g7",
+              "name": "@babel/parser",
+              "children": []
+            },
+            {
+              "id": "node-i2ycly4ug",
+              "name": "entities",
+              "children": []
+            },
+            {
+              "id": "node-mtmewoeot",
+              "name": "estree-walker",
+              "children": [
+                {
+                  "id": "node-kd7llxgoo",
+                  "name": "@types/estree",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "node-ysvgj0kfm",
+              "name": "source-map-js",
+              "children": []
+            },
+            {
+              "id": "node-ut1dmgfxh",
+              "name": "@vue/shared",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-fpwy01nz8",
+      "name": "@vue/compiler-sfc",
+      "children": [
+        {
+          "id": "node-idwlymeaw",
+          "name": "@babel/parser",
+          "children": []
+        },
+        {
+          "id": "node-vb2btu9in",
+          "name": "estree-walker",
+          "children": [
+            {
+              "id": "node-8p3uagv7l",
+              "name": "@types/estree",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node-s5xc009kd",
+          "name": "magic-string",
+          "children": [
+            {
+              "id": "node-zx41ecwd1",
+              "name": "@jridgewell/sourcemap-codec",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node-6han24tq8",
+          "name": "postcss",
+          "children": [
+            {
+              "id": "node-7m1ukvd7k",
+              "name": "nanoid",
+              "children": []
+            },
+            {
+              "id": "node-7hcdwl13t",
+              "name": "picocolors",
+              "children": []
+            },
+            {
+              "id": "node-ohqfe2vpj",
+              "name": "source-map-js",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node-qnboxyrzt",
+          "name": "source-map-js",
+          "children": []
+        },
+        {
+          "id": "node-kyt2j12jk",
+          "name": "@vue/compiler-dom",
+          "children": [
+            {
+              "id": "node-zu61r656k",
+              "name": "@vue/shared",
+              "children": []
+            },
+            {
+              "id": "node-qcpojmrac",
+              "name": "@vue/compiler-core",
+              "children": [
+                {
+                  "id": "node-oar0xp8n6",
+                  "name": "@babel/parser",
+                  "children": []
+                },
+                {
+                  "id": "node-ef4dvw3il",
+                  "name": "entities",
+                  "children": []
+                },
+                {
+                  "id": "node-z03g5nz5i",
+                  "name": "estree-walker",
+                  "children": [
+                    {
+                      "id": "node-tzx6dl1l3",
+                      "name": "@types/estree",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "node-1oh3wy4wd",
+                  "name": "source-map-js",
+                  "children": []
+                },
+                {
+                  "id": "node-xka5eilqj",
+                  "name": "@vue/shared",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "node-okh1d533m",
+          "name": "@vue/shared",
+          "children": []
+        },
+        {
+          "id": "node-zsi1lccl9",
+          "name": "@vue/compiler-core",
+          "children": [
+            {
+              "id": "node-y8844dqdz",
+              "name": "@babel/parser",
+              "children": []
+            },
+            {
+              "id": "node-90c8awkgm",
+              "name": "entities",
+              "children": []
+            },
+            {
+              "id": "node-wj822rmzb",
+              "name": "estree-walker",
+              "children": [
+                {
+                  "id": "node-8m00i70z5",
+                  "name": "@types/estree",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "node-jrtnxe6jg",
+              "name": "source-map-js",
+              "children": []
+            },
+            {
+              "id": "node-v1v9yot4g",
+              "name": "@vue/shared",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node-nr289gh4c",
+          "name": "@vue/compiler-ssr",
+          "children": [
+            {
+              "id": "node-9oe6vgf4a",
+              "name": "@vue/shared",
+              "children": []
+            },
+            {
+              "id": "node-9korm1c6y",
+              "name": "@vue/compiler-dom",
+              "children": [
+                {
+                  "id": "node-35lum7rtd",
+                  "name": "@vue/shared",
+                  "children": []
+                },
+                {
+                  "id": "node-ugqwxra5v",
+                  "name": "@vue/compiler-core",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-3nzjc2yyb",
+      "name": "@vue/runtime-dom",
+      "children": [
+        {
+          "id": "node-368m1cjt0",
+          "name": "csstype",
+          "children": []
+        },
+        {
+          "id": "node-go26okvb1",
+          "name": "@vue/shared",
+          "children": []
+        },
+        {
+          "id": "node-rhe8jzj3w",
+          "name": "@vue/runtime-core",
+          "children": [
+            {
+              "id": "node-5473vibqd",
+              "name": "@vue/shared",
+              "children": []
+            },
+            {
+              "id": "node-t1qzxszpe",
+              "name": "@vue/reactivity",
+              "children": [
+                {
+                  "id": "node-3veaq6to5",
+                  "name": "@vue/shared",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-7jn8x7t7t",
+      "name": "@vue/server-renderer",
+      "children": [
+        {
+          "id": "node-hnfuzxkor",
+          "name": "@vue/compiler-ssr",
+          "children": [
+            {
+              "id": "node-lhae0z97b",
+              "name": "@vue/shared",
+              "children": []
+            },
+            {
+              "id": "node-aslmne8g0",
+              "name": "@vue/compiler-dom",
+              "children": [
+                {
+                  "id": "node-mnw9w8tw5",
+                  "name": "@vue/shared",
+                  "children": []
+                },
+                {
+                  "id": "node-btqzilszl",
+                  "name": "@vue/compiler-core",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "node-92qee6rzg",
+          "name": "@vue/shared",
+          "children": []
+        }
+      ]
+    }
+  ]
+};

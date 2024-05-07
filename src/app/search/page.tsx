@@ -13,7 +13,7 @@ import {
 import Card from './Card';
 import Graph from './Graph';
 
-import fakeData from './index';
+import { fakeListData, fakeTreeData } from './index';
 
 type NpmPackageSearchType = {
   name: string;
@@ -151,11 +151,11 @@ const Search = ({ setPackageList, setPackageTree, latestPackageList }: {
 };
 
 export default function Page() {
-  const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>(fakeData as any as NpmPackageVersionInfo[]);
-  const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree>({} as NpmPackageSearchResultTree);
+  const [packageList, setPackageList] = useState<NpmPackageVersionInfo[]>(fakeListData as any as NpmPackageVersionInfo[]);
+  const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree>(fakeTreeData as NpmPackageSearchResultTree);
   const latestPackageList = useLatest(packageList);
 
-  const displayPackageInfoList = useMemo(() => {
+  const packageInfoList = useMemo(() => {
     return packageList.map(item => {
       const { name, version, homepage, author, license, keywords, count, description, time } = item;
       return {
@@ -171,6 +171,23 @@ export default function Page() {
       };
     });
   }, [packageList]);
+
+  const sourceTargetMap = useMemo(() => {
+    const result = [] as { source: string, target: string }[];
+
+    const deal = (tree: NpmPackageSearchResultTree) => {
+      if (tree.children?.length) {
+        tree.children.forEach(item => {
+          const saveItem = { source: tree.id, target: item.id };
+          result.push(saveItem);
+          deal(item);
+        });
+      }
+    };
+
+    deal(packageTree);
+    return result;
+  }, [packageTree]);
 
 
   return (
@@ -192,10 +209,10 @@ export default function Page() {
       </div>
       <div style={{ height: 'calc(100vh - 64px)' }} className="flex p-4 pt-0">
         <div className="w-80 gap-2 flex flex-col h-full overflow-auto pr-2">
-          {displayPackageInfoList.map(item => <Card {...item} key={item.name} />)}
+          {packageInfoList.map(item => <Card {...item} key={item.name} />)}
         </div>
         <div className="grow h-full">
-          <Graph />
+          <Graph sourceTargetMap={sourceTargetMap} packageInfoList={packageInfoList} />
         </div>
       </div>
     </div>
