@@ -123,6 +123,7 @@ const Search = ({ setPackageList, setPackageTree, latestPackageList }: {
 
   const onSearch = async () => {
     const tree: NpmPackageSearchResultTree = { id: generateNewNodeId(), name: text, children: [] };
+    // TODO 记录树结构的层级
     const queue = [tree];
     while (queue.length) {
       const node = queue.shift()!;
@@ -177,7 +178,7 @@ export default function Page() {
   const graphNodes = useMemo(() => {
     return packageInfoList.map(item => {
       const { name, count  } = item;
-      return { id: name, size: count * 3 };
+      return { id: name, size: 50 + count * 10, label: name };
     });
   }, [packageInfoList]);
 

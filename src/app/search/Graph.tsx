@@ -13,23 +13,40 @@ export type NodeType = { id: string, size: number, isLeaf: boolean };
 
 const data = {
   nodes: [
+    // { id: 'node0', size: 50 },
+    // { id: 'node1', size: 30 },
+    // { id: 'node2', size: 30 },
+    // { id: 'node3', size: 30 },
+    // { id: 'node4', size: 30, isLeaf: true },
+    // { id: 'node5', size: 30, isLeaf: true },
+    // { id: 'node6', size: 15, isLeaf: true },
+    // { id: 'node7', size: 15, isLeaf: true },
+    // { id: 'node8', size: 15, isLeaf: true },
+    // { id: 'node9', size: 15, isLeaf: true },
+    // { id: 'node10', size: 15, isLeaf: true },
+    // { id: 'node11', size: 15, isLeaf: true },
+    // { id: 'node12', size: 15, isLeaf: true },
+    // { id: 'node13', size: 15, isLeaf: true },
+    // { id: 'node14', size: 15, isLeaf: true },
+    // { id: 'node15', size: 15, isLeaf: true },
+    // { id: 'node16', size: 15, isLeaf: true },
     { id: 'node0', size: 50 },
     { id: 'node1', size: 30 },
     { id: 'node2', size: 30 },
     { id: 'node3', size: 30 },
-    { id: 'node4', size: 30, isLeaf: true },
-    { id: 'node5', size: 30, isLeaf: true },
-    { id: 'node6', size: 15, isLeaf: true },
-    { id: 'node7', size: 15, isLeaf: true },
-    { id: 'node8', size: 15, isLeaf: true },
-    { id: 'node9', size: 15, isLeaf: true },
-    { id: 'node10', size: 15, isLeaf: true },
-    { id: 'node11', size: 15, isLeaf: true },
-    { id: 'node12', size: 15, isLeaf: true },
-    { id: 'node13', size: 15, isLeaf: true },
-    { id: 'node14', size: 15, isLeaf: true },
-    { id: 'node15', size: 15, isLeaf: true },
-    { id: 'node16', size: 15, isLeaf: true },
+    { id: 'node4', size: 30,  },
+    { id: 'node5', size: 30, },
+    { id: 'node6', size: 15,},
+    { id: 'node7', size: 15, },
+    { id: 'node8', size: 15,  },
+    { id: 'node9', size: 15, },
+    { id: 'node10', size: 15, },
+    { id: 'node11', size: 15, },
+    { id: 'node12', size: 15, },
+    { id: 'node13', size: 15, },
+    { id: 'node14', size: 15,},
+    { id: 'node15', size: 15, },
+    { id: 'node16', size: 15, },
   ],
   edges: [
     { source: 'node0', target: 'node1' },
@@ -68,11 +85,14 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
         layout: {
           type: 'force',
           preventOverlap: true,
+          // linkDistance: (d: { source: { id: string; }; }) => {
+          //   if (d.source.id === 'node0') {
+          //     return 100;
+          //   }
+          //   return 30;
+          // },
           linkDistance: (d: { source: { id: string; }; }) => {
-            if (d.source.id === 'node0') {
-              return 100;
-            }
-            return 30;
+            return 200;
           },
           nodeStrength: (d: { isLeaf: any; }) => {
             if (d.isLeaf) {
@@ -117,6 +137,12 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
         e.item.get('model').fx = null;
         e.item.get('model').fy = null;
       });
+      
+      // graph.on('node:click', function (e: any) {
+      //   // e.item.get('model').fx = null;
+      //   // e.item.get('model').fy = null;
+      //   console.log(e);
+      // });
     }
 
   }, []);
