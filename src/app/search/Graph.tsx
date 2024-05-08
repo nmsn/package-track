@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import G6 from '@antv/g6';
 // import type { Graph } from '@antv/g6';
 
@@ -50,9 +50,8 @@ const data = {
     { source: 'node3', target: 'node16' },
   ],
 };
-const nodes = data.nodes;
 
-export default function Graph({ packageInfoList, sourceTargetMap }: { packageInfoList: any; sourceTargetMap: any;}) {
+export default function Graph({ nodes, edges }: { nodes: { id: string, size: number }[]; edges: { source: string, target: string }[] }) {
   const containerRef: any = useRef(null);
   let graph: any = null;
 
@@ -97,8 +96,8 @@ export default function Graph({ packageInfoList, sourceTargetMap }: { packageInf
       });
 
       graph.data({
-        nodes,
-        edges: data.edges.map(function (edge: any, i) {
+        nodes: nodes,
+        edges: edges.map(function (edge: any, i) {
           edge.id = 'edge' + i;
           return Object.assign({}, edge);
         }),

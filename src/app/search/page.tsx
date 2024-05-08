@@ -171,6 +171,16 @@ export default function Page() {
       };
     });
   }, [packageList]);
+  
+  
+  // TODO 引用次数和层级的权重
+  const graphNodes = useMemo(() => {
+    return packageInfoList.map(item => {
+      const { name, count  } = item;
+      return { id: name, size: count * 3 };
+    });
+  }, [packageInfoList]);
+
 
   const sourceTargetMap = useMemo(() => {
     const result = [] as { source: string, target: string }[];
@@ -178,7 +188,7 @@ export default function Page() {
     const deal = (tree: NpmPackageSearchResultTree) => {
       if (tree.children?.length) {
         tree.children.forEach(item => {
-          const saveItem = { source: tree.id, target: item.id };
+          const saveItem = { source: tree.name, target: item.name };
           result.push(saveItem);
           deal(item);
         });
@@ -212,7 +222,7 @@ export default function Page() {
           {packageInfoList.map(item => <Card {...item} key={item.name} />)}
         </div>
         <div className="grow h-full">
-          <Graph sourceTargetMap={sourceTargetMap} packageInfoList={packageInfoList} />
+          <Graph edges={sourceTargetMap} nodes={graphNodes} />
         </div>
       </div>
     </div>
