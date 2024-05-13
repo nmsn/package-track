@@ -57,7 +57,7 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
           //   return 30;
           // },
           linkDistance: (d: { source: { id: string; }; }) => {
-            return 200;
+            return 300;
           },
           nodeStrength: (d: { isLeaf: any; }) => {
             if (d.isLeaf) {
@@ -76,7 +76,7 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
           color: '#5B8FF9',
         },
         modes: {
-          default: ['drag-canvas'],
+          default: ['drag-canvas', 'activate-relations'],
         },
       });
 
@@ -84,7 +84,12 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
         nodes: nodes.map(item => ({ ...item, label: fittingString(item.id, item.size, globalFontSize) })),
         edges: edges.map(function (edge: any, i) {
           edge.id = 'edge' + i;
-          return Object.assign({}, edge);
+          return Object.assign({}, {
+            ...edge,
+            style: {
+              endArrow: true,
+            },
+          });
         }),
       });
       graph.render();
@@ -103,13 +108,17 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
         e.item.get('model').fy = null;
       });
 
+      graph.on('node:mouseenter', (e: { item: any; }) => {
+        graph.setItemState(e.item, 'active', true);
+      });
 
+      graph.on('node:mouseleave', (e: { item: any; }) => {
+        graph.setItemState(e.item, 'active', false);
+      });
 
-      // graph.on('node:click', function (e: any) {
-      //   // e.item.get('model').fx = null;
-      //   // e.item.get('model').fy = null;
-      //   console.log(e);
-      // });
+      graph.on('nodeselectchange', (e: { selectedItems: any; select: any; }) => {
+        console.log(e.selectedItems, e.select);
+      });
     }
 
   }, []);
