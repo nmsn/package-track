@@ -11,62 +11,27 @@ function refreshDragedNodePosition(e: any) {
 export type SourceTargetMapType = { source: string, target: string };
 export type NodeType = { id: string, size: number, isLeaf: boolean };
 
-const data = {
-  nodes: [
-    // { id: 'node0', size: 50 },
-    // { id: 'node1', size: 30 },
-    // { id: 'node2', size: 30 },
-    // { id: 'node3', size: 30 },
-    // { id: 'node4', size: 30, isLeaf: true },
-    // { id: 'node5', size: 30, isLeaf: true },
-    // { id: 'node6', size: 15, isLeaf: true },
-    // { id: 'node7', size: 15, isLeaf: true },
-    // { id: 'node8', size: 15, isLeaf: true },
-    // { id: 'node9', size: 15, isLeaf: true },
-    // { id: 'node10', size: 15, isLeaf: true },
-    // { id: 'node11', size: 15, isLeaf: true },
-    // { id: 'node12', size: 15, isLeaf: true },
-    // { id: 'node13', size: 15, isLeaf: true },
-    // { id: 'node14', size: 15, isLeaf: true },
-    // { id: 'node15', size: 15, isLeaf: true },
-    // { id: 'node16', size: 15, isLeaf: true },
-    { id: 'node0', size: 50 },
-    { id: 'node1', size: 30 },
-    { id: 'node2', size: 30 },
-    { id: 'node3', size: 30 },
-    { id: 'node4', size: 30,  },
-    { id: 'node5', size: 30, },
-    { id: 'node6', size: 15,},
-    { id: 'node7', size: 15, },
-    { id: 'node8', size: 15,  },
-    { id: 'node9', size: 15, },
-    { id: 'node10', size: 15, },
-    { id: 'node11', size: 15, },
-    { id: 'node12', size: 15, },
-    { id: 'node13', size: 15, },
-    { id: 'node14', size: 15,},
-    { id: 'node15', size: 15, },
-    { id: 'node16', size: 15, },
-  ],
-  edges: [
-    { source: 'node0', target: 'node1' },
-    { source: 'node0', target: 'node2' },
-    { source: 'node0', target: 'node3' },
-    { source: 'node0', target: 'node4' },
-    { source: 'node0', target: 'node5' },
-    { source: 'node1', target: 'node6' },
-    { source: 'node1', target: 'node7' },
-    { source: 'node2', target: 'node8' },
-    { source: 'node2', target: 'node9' },
-    { source: 'node2', target: 'node10' },
-    { source: 'node2', target: 'node11' },
-    { source: 'node2', target: 'node12' },
-    { source: 'node2', target: 'node13' },
-    { source: 'node3', target: 'node14' },
-    { source: 'node3', target: 'node15' },
-    { source: 'node3', target: 'node16' },
-  ],
+const fittingString = (str: string, maxWidth: number, fontSize: number) => {
+  let currentWidth = 0;
+  let res = str;
+  const pattern = new RegExp('[\u4E00-\u9FA5]+'); // distinguish the Chinese charactors and letters
+  str.split('').forEach((letter, i) => {
+    if (currentWidth > maxWidth) return;
+    if (pattern.test(letter)) {
+      // Chinese charactors
+      currentWidth += fontSize;
+    } else {
+      // get the width of single letter according to the fontSize
+      currentWidth += G6.Util.getLetterWidth(letter, fontSize);
+    }
+    if (currentWidth > maxWidth) {
+      res = `${str.substr(0, i)}\n${str.substr(i)}`;
+    }
+  });
+  return res;
 };
+
+const globalFontSize = 12;
 
 export default function Graph({ nodes, edges }: { nodes: { id: string, size: number }[]; edges: { source: string, target: string }[] }) {
   const containerRef: any = useRef(null);
@@ -116,7 +81,7 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
       });
 
       graph.data({
-        nodes: nodes,
+        nodes: nodes.map(item => ({ ...item, label: fittingString(item.id, item.size, globalFontSize) })),
         edges: edges.map(function (edge: any, i) {
           edge.id = 'edge' + i;
           return Object.assign({}, edge);
@@ -137,7 +102,9 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
         e.item.get('model').fx = null;
         e.item.get('model').fy = null;
       });
-      
+
+
+
       // graph.on('node:click', function (e: any) {
       //   // e.item.get('model').fx = null;
       //   // e.item.get('model').fy = null;
