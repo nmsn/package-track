@@ -1,5 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react';
 import G6 from '@antv/g6';
+import { SquareChevronLeftIcon } from 'lucide-react';
 // import type { Graph } from '@antv/g6';
 
 function refreshDragedNodePosition(e: any) {
@@ -33,7 +34,12 @@ const fittingString = (str: string, maxWidth: number, fontSize: number) => {
 
 const globalFontSize = 12;
 
-export default function Graph({ nodes, edges }: { nodes: { id: string, size: number }[]; edges: { source: string, target: string }[] }) {
+type GraphPropsType = { nodes: { id: string, size: number }[]; edges: { source: string, target: string }[] } & {
+  onHover: (name: string, type: 'enter' | 'leave') => void;
+  hoveredItem: string;
+};
+
+export default function Graph({ nodes, edges, onHover, hoveredItem }: GraphPropsType) {
   const containerRef: any = useRef(null);
   let graph: any = null;
 
@@ -110,18 +116,26 @@ export default function Graph({ nodes, edges }: { nodes: { id: string, size: num
 
       graph.on('node:mouseenter', (e: { item: any; }) => {
         graph.setItemState(e.item, 'active', true);
+        onHover(e.item._cfg.id, 'enter');
       });
 
       graph.on('node:mouseleave', (e: { item: any; }) => {
         graph.setItemState(e.item, 'active', false);
+        onHover(e.item._cfg.id, 'leave');
       });
 
-      graph.on('nodeselectchange', (e: { selectedItems: any; select: any; }) => {
-        console.log(e.selectedItems, e.select);
-      });
+      // graph.on('nodeselectchange', (e: { selectedItems: any; select: any; }) => {
+      //   console.log(e.selectedItems, e.select);
+      // });
     }
 
   }, []);
+
+  useEffect(() => {
+    if (hoveredItem) {
+      graph.setItemState(hoveredItem, 'active', true);
+    }
+  }, [graph, hoveredItem]);
 
   useEffect(() => {
     if (typeof window !== 'undefined')

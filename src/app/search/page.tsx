@@ -156,6 +156,8 @@ export default function Page() {
   const [packageTree, setPackageTree] = useState<NpmPackageSearchResultTree>(fakeTreeData as NpmPackageSearchResultTree);
   const latestPackageList = useLatest(packageList);
 
+  const [hoverItem, setHoverItem] = useState<string>('');
+
   const packageInfoList = useMemo(() => {
     return packageList.map(item => {
       const { name, version, homepage, author, license, keywords, count, description, time } = item;
@@ -172,12 +174,12 @@ export default function Page() {
       };
     });
   }, [packageList]);
-  
-  
+
+
   // TODO 引用次数和层级的权重
   const graphNodes = useMemo(() => {
     return packageInfoList.map(item => {
-      const { name, count  } = item;
+      const { name, count } = item;
       return { id: name, size: 50 + count * 10, label: name };
     });
   }, [packageInfoList]);
@@ -200,6 +202,15 @@ export default function Page() {
     return result;
   }, [packageTree]);
 
+  // TODO 右侧图表操作高亮，左侧列表滚动到对应位置
+  const onHover = (packageName: string, type: 'enter' | 'leave') => {
+    console.log(packageName, type);
+    if (type === 'enter') {
+      setHoverItem(packageName);
+    } else {
+      setHoverItem('');
+    }
+  };
 
   return (
     <div>
@@ -219,11 +230,11 @@ export default function Page() {
         </div>
       </div>
       <div style={{ height: 'calc(100vh - 64px)' }} className="flex p-4 pt-0">
-        <div className="w-80 gap-2 flex flex-col h-full overflow-auto pr-2">
-          {packageInfoList.map(item => <Card {...item} key={item.name} />)}
+        <div className="w-80 gap-2 flex flex-col h-full overflow-auto pr-2 shrink-0">
+          {packageInfoList.map(item => <Card onHover={onHover} {...item} key={item.name} isHovered={item.name === hoverItem}/>)}
         </div>
-        <div className="grow h-full">
-          <Graph edges={sourceTargetMap} nodes={graphNodes} />
+        <div className="grow h-full shrink">
+          <Graph edges={sourceTargetMap} nodes={graphNodes} onHover={onHover} hovererItem={hoverItem} />
         </div>
       </div>
     </div>
