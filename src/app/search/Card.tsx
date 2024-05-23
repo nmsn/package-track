@@ -31,8 +31,8 @@ export default function Card({
         {description}
       </div>
       <div className='flex gap-2 justify-between items-center'>
-        <Badge>{version}</Badge>
-        <Badge>{count}</Badge>
+        <Badge>Latest: {version}</Badge>
+        <Badge>Count: {count}</Badge>
       </div>
     </div >
   );
