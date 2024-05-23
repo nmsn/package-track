@@ -41,15 +41,15 @@ type GraphPropsType = { nodes: { id: string, size: number }[]; edges: { source: 
 
 export default function Graph({ nodes, edges, onHover, hoveredItem }: GraphPropsType) {
   const containerRef: any = useRef(null);
-  let graph: any = null;
+  const graphRef: any = useRef(null);
 
   useEffect(() => {
-    if (!graph) {
+    if (!graphRef.current) {
       const width = containerRef.current?.scrollWidth || 500;
       const height = containerRef.current?.scrollHeight || 500;
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      graph = new G6.Graph({
+      graphRef.current = new G6.Graph({
         container: containerRef.current,
         width,
         height,
@@ -86,7 +86,7 @@ export default function Graph({ nodes, edges, onHover, hoveredItem }: GraphProps
         },
       });
 
-      graph.data({
+      graphRef.current.data({
         nodes: nodes.map(item => ({ ...item, label: fittingString(item.id, item.size, globalFontSize) })),
         edges: edges.map(function (edge: any, i) {
           edge.id = 'edge' + i;
@@ -98,29 +98,30 @@ export default function Graph({ nodes, edges, onHover, hoveredItem }: GraphProps
           });
         }),
       });
-      graph.render();
 
-      graph.on('node:dragstart', function (e: any) {
-        graph.layout();
+      graphRef.current.render();
+
+      graphRef.current.on('node:dragstart', function (e: any) {
+        graphRef.current.layout();
         refreshDragedNodePosition(e);
       });
 
-      graph.on('node:drag', function (e: any) {
+      graphRef.current.on('node:drag', function (e: any) {
         refreshDragedNodePosition(e);
       });
 
-      graph.on('node:dragend', function (e: any) {
+      graphRef.current.on('node:dragend', function (e: any) {
         e.item.get('model').fx = null;
         e.item.get('model').fy = null;
       });
 
-      graph.on('node:mouseenter', (e: { item: any; }) => {
-        graph.setItemState(e.item, 'active', true);
+      graphRef.current.on('node:mouseenter', (e: { item: any; }) => {
+        graphRef.current.setItemState(e.item, 'active', true);
         onHover(e.item._cfg.id, 'enter');
       });
 
-      graph.on('node:mouseleave', (e: { item: any; }) => {
-        graph.setItemState(e.item, 'active', false);
+      graphRef.current.on('node:mouseleave', (e: { item: any; }) => {
+        graphRef.current.setItemState(e.item, 'active', false);
         onHover(e.item._cfg.id, 'leave');
       });
 
@@ -129,20 +130,23 @@ export default function Graph({ nodes, edges, onHover, hoveredItem }: GraphProps
       // });
     }
 
-  }, []);
+  }, [edges, nodes, onHover]);
+
+  console.log(graphRef.current);
+
 
   useEffect(() => {
     if (hoveredItem) {
-      graph.setItemState(hoveredItem, 'active', true);
+      graphRef.current?.setItemState(hoveredItem, 'active', true);
     }
-  }, [graph, hoveredItem]);
+  }, [hoveredItem]);
 
   useEffect(() => {
     if (typeof window !== 'undefined')
       window.onresize = () => {
-        if (!graph || graph.get('destroyed')) return;
+        if (!graphRef.current || graphRef.current?.get('destroyed')) return;
         if (!containerRef.current || !containerRef.current.scrollWidth || !containerRef.current.scrollHeight) return;
-        graph.changeSize(containerRef.current.scrollWidth, containerRef.current.scrollHeight);
+        graphRef.current.changeSize(containerRef.current.scrollWidth, containerRef.current.scrollHeight);
       };
   }, []);
 
